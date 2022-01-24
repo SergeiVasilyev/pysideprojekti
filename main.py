@@ -1,14 +1,19 @@
 import sys
-from PySide6.QtCore import Qt
-from PySide6.QtWidgets import QApplication, QLabel
+from PySide6.QtWidgets import QApplication, QMainWindow
+
+from quiz_ui import Ui_MainWindow
                                                      
+class MainWindow(QMainWindow):
+    def __init__(self):
+        super(MainWindow, self).__init__()
+        self.ui = Ui_MainWindow()
+        self.ui.setupUi(self)
+
 if __name__ == "__main__":
     app = QApplication(sys.argv)
-    label = QLabel("Hello World", alignment=Qt.AlignCenter)
-    label.show()
-    sys.exit(app.exec_())
 
+    window = MainWindow()
+    window.show()
 
+    sys.exit(app.exec())
 
-
-    
