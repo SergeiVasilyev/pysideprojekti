@@ -32,7 +32,7 @@ class MainWindow(QMainWindow):
         tekstit = KYSYMYKSET_JA_VASTAUKSET[indeksi]
         uudet_tekstit = []
         for (numero, teksti) in enumerate(tekstit):
-            if teksti.startwidth("*"):
+            if teksti.startswith("*"):
                 teksti = teksti[1:]
                 self.oikea_vastaus = numero
             uudet_tekstit.append(teksti)
