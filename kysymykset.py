@@ -1,5 +1,5 @@
 import requests
-
+import html
 import random
 
 API_OSOITE = "https://opentdb.com/api.php?amount=10&type=multiple&difficulty=easy"
@@ -14,11 +14,15 @@ def lataa_kysymys_netista():
         vaarat_vastaukset = juttu["incorrect_answers"]
         vastaukset = ["*" + oikea_vastaus] + vaarat_vastaukset
         random.shuffle(vastaukset)
-        kysymykset_ja_vastaukset.append([kysymys] + vastaukset)
+        tekstit = [
+            html.unescape(teksti)
+            for teksti in [kysymys] + vastaukset
+        ]
+        kysymykset_ja_vastaukset.append(tekstit)
 
     import pprint
     pprint.pprint(kysymykset_ja_vastaukset)
-    
+
     return kysymykset_ja_vastaukset
 
     
