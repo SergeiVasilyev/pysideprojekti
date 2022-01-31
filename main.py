@@ -1,3 +1,4 @@
+from select import select
 import sys
 from PySide6.QtWidgets import QApplication, QMainWindow
 
@@ -8,8 +9,8 @@ KYSYMYKSET_JA_VASTAUKSET = [
     (
         "Mistä Python kieli on saanut nimensä",
         "K''rmest'",
-        "*laulusta",
-        "TV sarjasta",
+        "laulusta",
+        "*TV sarjasta",
         "elokuvasta",
     ),
     (
@@ -27,6 +28,9 @@ class MainWindow(QMainWindow):
         self.ui = Ui_MainWindow()
         self.ui.setupUi(self)
         self.vaihda_kysymys_ja_vastaus(0)
+        self.kytke_napit()
+        self.indeksi = 0
+        self.pisteet = 0
 
     def vaihda_kysymys_ja_vastaus(self, indeksi):
         tekstit = KYSYMYKSET_JA_VASTAUKSET[indeksi]
@@ -50,8 +54,45 @@ class MainWindow(QMainWindow):
         self.ui.button3.setText(t3)
         self.ui.button4.setText(t4)
 
+
     def aseta_kysymys(self, kysymys):
         self.ui.label.setText(kysymys)
+
+    def kytke_napit(self):
+        self.ui.button1.clicked.connect(self.nappia_painettu)
+        self.ui.button2.clicked.connect(self.nappia_painettu)
+        self.ui.button3.clicked.connect(self.nappia_painettu)
+        self.ui.button4.clicked.connect(self.nappia_painettu)
+
+    def nappia_painettu(self):
+        print(self.sender())
+        if self.sender() == self.ui.button1:
+            nappi = 1
+        elif self.sender() == self.ui.button2:
+            nappi = 2
+        elif self.sender() == self.ui.button3:
+            nappi = 3
+        elif self.sender() == self.ui.button4:
+            nappi = 4
+        else:
+            return
+        if nappi == self.oikea_vastaus:
+            print("Oikein!")
+            self.pisteet += 1
+
+        self.indeksi += 1
+        if self.indeksi >= len(KYSYMYKSET_JA_VASTAUKSET):
+            self.indeksi = 0
+        
+        self.vaihda_kysymys_ja_vastaus(self.indeksi)
+
+        print("PAINETTU NAPPIA ", nappi)
+
+
+
+
+
+
 
 if __name__ == "__main__":
     app = QApplication(sys.argv)
