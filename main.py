@@ -1,6 +1,6 @@
 from select import select
 import sys
-from PySide6.QtWidgets import QApplication, QMainWindow
+from PySide6.QtWidgets import QApplication, QMainWindow, QMessageBox
 
 from quiz_ui import Ui_MainWindow
 
@@ -19,6 +19,13 @@ KYSYMYKSET_JA_VASTAUKSET = [
         "*25",
         "27",
         "35",
+    ),
+    (
+        "6*6",
+        "*36",
+        "16",
+        "56",
+        "46",
     ),
 ]
                                                      
@@ -82,7 +89,11 @@ class MainWindow(QMainWindow):
 
         self.indeksi += 1
         if self.indeksi >= len(KYSYMYKSET_JA_VASTAUKSET):
+            laatikko = QMessageBox(self)
+            laatikko.setText(f"Peli päättyi! Sait {self.pisteet} pistettä")
+            laatikko.exec()
             self.indeksi = 0
+            self.pisteet = 0
         
         self.vaihda_kysymys_ja_vastaus(self.indeksi)
 
