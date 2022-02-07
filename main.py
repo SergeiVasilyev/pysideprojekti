@@ -1,7 +1,7 @@
 import sys
 import time
 
-from PySide6.QtWidgets import QApplication, QMainWindow, QMessageBox
+from PySide6.QtWidgets import QApplication, QMainWindow, QMessageBox, QLabel
 
 from kysymykset import lataa_kysymykset_netista
 from quiz_ui import Ui_MainWindow
@@ -12,19 +12,24 @@ class MainWindow(QMainWindow):
         super().__init__()
         self.ui = Ui_MainWindow()
         self.ui.setupUi(self)
+        self.luo_status_widget()
         self.tiedot = lataa_kysymykset_netista()
         self.vaihda_kysymys_ja_vastaukset(0)
         self.kytke_napit()
         self.kierros = 1
         self.pisteet = 0
         self.indeksi = 0
+    
+    def luo_status_widget(self):
+        self.kierros_label = QLabel()
+        self.ui.statusbar.addPermanentWidget(self.kierros_label)
 
     def vaihda_kysymys_ja_vastaukset(self, indeksi):
         tekstit = self.tiedot[indeksi]
         uudet_tekstit = []
         for (numero, teksti) in enumerate(tekstit):
             if teksti.startswith("*"):
-                teksti = teksti[1:]
+                teksti = teksti[0:]
                 self.oikea_vastaus = numero
             uudet_tekstit.append(teksti)
         self.aseta_tekstit(uudet_tekstit)
@@ -93,23 +98,28 @@ class MainWindow(QMainWindow):
             laatikko.exec()
             self.kierros += 1
             self.indeksi = 0
+        
+            # Jos vastaukset ovat oikein niin ladataan uusia kysymyksiä
+            if self.pisteet >= len(self.tiedot): # Если ответы все правильные, загружаем новые вопросы
+                self.kierros = 1
+                self.tiedot = lataa_kysymykset_netista()
             self.pisteet = 0
-
+        
         self.vaihda_kysymys_ja_vastaukset(self.indeksi)
 
     @property
     def pisteet(self):
-        return self._pisteet
+        return self.points_int
 
     @pisteet.setter
     def pisteet(self, arvo):
-        self._pisteet = arvo
+        self.points_int = arvo
         # self.ui.statusbar.showMessage(f"Pisteet: {self.pisteet}")
         self.paivita_tilarivi()
 
     def paivita_tilarivi(self):
-        self.ui.statusbar.showMessage(f"Pisteet: {self.pisteet} | Kierros: {self.kierros}")
-
+        self.ui.statusbar.showMessage(f"Pisteet: {self.pisteet}")
+        self.kierros_label.setText(f"Kierros: {self.kierros}")
 
 if __name__ == "__main__":
     app = QApplication(sys.argv)
