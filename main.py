@@ -15,6 +15,7 @@ class MainWindow(QMainWindow):
         self.tiedot = lataa_kysymykset_netista()
         self.vaihda_kysymys_ja_vastaukset(0)
         self.kytke_napit()
+        self.kierros = 1
         self.pisteet = 0
         self.indeksi = 0
 
@@ -27,6 +28,8 @@ class MainWindow(QMainWindow):
                 self.oikea_vastaus = numero
             uudet_tekstit.append(teksti)
         self.aseta_tekstit(uudet_tekstit)
+        # self.ui.nro_label.setText(str(indeksi+1)+"/10")
+        self.ui.nro_label.setText(f"{indeksi+1}/{len(self.tiedot)}")
 
     def aseta_tekstit(self, tekstit):
         self.aseta_kysymys(tekstit[0])
@@ -60,26 +63,52 @@ class MainWindow(QMainWindow):
         else:
             return
 
-        if nappi == self.oikea_vastaus:
-            print("Oikein!")
-            painettu_nappi = self.sender()
-            self.pisteet += 1
-            painettu_nappi.setStyleSheet(
-                "QPushButton {background: rgb(0,255,0);}"
-            )
-            QApplication.processEvents()
-            time.sleep(1)
-            painettu_nappi.setStyleSheet("")            
 
+        painettu_nappi = self.sender()
+        if nappi == self.oikea_vastaus:
+            print("Oikein!") 
+            self.pisteet += 1
+            napin_vari = "rgb(0,255,0)"
+        else:
+            print("Väärin!")
+            napin_vari = "rgb(255,0,0)"
+
+        painettu_nappi.setStyleSheet(
+                "QPushButton {background: " + napin_vari + ";}"
+            )   
+        QApplication.processEvents()
+        time.sleep(0.15)
+        painettu_nappi.setStyleSheet("")
+
+        
+
+        self.seuraava_kysymys()
+    
+
+    def seuraava_kysymys (self):
         self.indeksi += 1
         if self.indeksi >= len(self.tiedot):
             laatikko = QMessageBox(self)
             laatikko.setText(f"Peli päättyi! Sait {self.pisteet} pistettä.")
             laatikko.exec()
+            self.kierros += 1
             self.indeksi = 0
             self.pisteet = 0
 
         self.vaihda_kysymys_ja_vastaukset(self.indeksi)
+
+    @property
+    def pisteet(self):
+        return self._pisteet
+
+    @pisteet.setter
+    def pisteet(self, arvo):
+        self._pisteet = arvo
+        # self.ui.statusbar.showMessage(f"Pisteet: {self.pisteet}")
+        self.paivita_tilarivi()
+
+    def paivita_tilarivi(self):
+        self.ui.statusbar.showMessage(f"Pisteet: {self.pisteet} | Kierros: {self.kierros}")
 
 
 if __name__ == "__main__":
