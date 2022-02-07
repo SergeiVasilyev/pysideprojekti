@@ -94,15 +94,16 @@ class MainWindow(QMainWindow):
         self.indeksi += 1
         if self.indeksi >= len(self.tiedot):
             laatikko = QMessageBox(self)
-            laatikko.setText(f"Peli päättyi! Sait {self.pisteet} pistettä.")
+            # Jos vastaukset ovat oikein niin ladataan uusia kysymyksiä
+            if self.pisteet >= len(self.tiedot): # Если ответы все правильные, загружаем новые вопросы
+                self.kierros = 0
+                self.tiedot = lataa_kysymykset_netista()
+                laatikko.setText("Sait kaikki oikein!")
+            else:
+                laatikko.setText(f"Peli päättyi! Sait {self.pisteet} pistettä.") 
             laatikko.exec()
             self.kierros += 1
             self.indeksi = 0
-        
-            # Jos vastaukset ovat oikein niin ladataan uusia kysymyksiä
-            if self.pisteet >= len(self.tiedot): # Если ответы все правильные, загружаем новые вопросы
-                self.kierros = 1
-                self.tiedot = lataa_kysymykset_netista()
             self.pisteet = 0
         
         self.vaihda_kysymys_ja_vastaukset(self.indeksi)
