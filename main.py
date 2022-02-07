@@ -1,24 +1,24 @@
-from operator import index
-from select import select
 import sys
+import time
+
 from PySide6.QtWidgets import QApplication, QMainWindow, QMessageBox
 
-from kysymykset import lataa_kysymys_netista
+from kysymykset import lataa_kysymykset_netista
 from quiz_ui import Ui_MainWindow
 
-                                                     
+
 class MainWindow(QMainWindow):
     def __init__(self):
-        super(MainWindow, self).__init__()
+        super().__init__()
         self.ui = Ui_MainWindow()
         self.ui.setupUi(self)
-        self.tiedot = lataa_kysymys_netista()
-        self.vaihda_kysymys_ja_vastaus(0)
+        self.tiedot = lataa_kysymykset_netista()
+        self.vaihda_kysymys_ja_vastaukset(0)
         self.kytke_napit()
-        self.indeksi = 0
         self.pisteet = 0
+        self.indeksi = 0
 
-    def vaihda_kysymys_ja_vastaus(self, indeksi):
+    def vaihda_kysymys_ja_vastaukset(self, indeksi):
         tekstit = self.tiedot[indeksi]
         uudet_tekstit = []
         for (numero, teksti) in enumerate(tekstit):
@@ -26,7 +26,6 @@ class MainWindow(QMainWindow):
                 teksti = teksti[1:]
                 self.oikea_vastaus = numero
             uudet_tekstit.append(teksti)
-            # print(numero, ":", teksti)
         self.aseta_tekstit(uudet_tekstit)
 
     def aseta_tekstit(self, tekstit):
@@ -40,7 +39,6 @@ class MainWindow(QMainWindow):
         self.ui.button3.setText(t3)
         self.ui.button4.setText(t4)
 
-
     def aseta_kysymys(self, kysymys):
         self.ui.label.setText(kysymys)
 
@@ -51,7 +49,6 @@ class MainWindow(QMainWindow):
         self.ui.button4.clicked.connect(self.nappia_painettu)
 
     def nappia_painettu(self):
-        # print(self.sender())
         if self.sender() == self.ui.button1:
             nappi = 1
         elif self.sender() == self.ui.button2:
@@ -62,26 +59,27 @@ class MainWindow(QMainWindow):
             nappi = 4
         else:
             return
+
         if nappi == self.oikea_vastaus:
             print("Oikein!")
+            painettu_nappi = self.sender()
             self.pisteet += 1
+            painettu_nappi.setStyleSheet(
+                "QPushButton {background: rgb(0,255,0);}"
+            )
+            QApplication.processEvents()
+            time.sleep(1)
+            painettu_nappi.setStyleSheet("")            
 
         self.indeksi += 1
         if self.indeksi >= len(self.tiedot):
             laatikko = QMessageBox(self)
-            laatikko.setText(f"Peli päättyi! Sait {self.pisteet} pistettä")
+            laatikko.setText(f"Peli päättyi! Sait {self.pisteet} pistettä.")
             laatikko.exec()
             self.indeksi = 0
             self.pisteet = 0
-        
-        self.vaihda_kysymys_ja_vastaus(self.indeksi)
 
-        # print("PAINETTU NAPPIA ", nappi)
-
-
-
-
-
+        self.vaihda_kysymys_ja_vastaukset(self.indeksi)
 
 
 if __name__ == "__main__":
@@ -91,4 +89,3 @@ if __name__ == "__main__":
     window.show()
 
     sys.exit(app.exec())
-
