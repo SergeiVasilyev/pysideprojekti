@@ -3,7 +3,7 @@ import random
 
 import requests
 
-API_OSOITE = "https://opentdb.com/api.php?amount=10&type=multiple&difficulty=easy"
+API_OSOITE = "https://opentdb.com/api.php?amount=3&type=multiple&difficulty=easy"
 
 VARAKYSYMYKSET = {
     "results": [

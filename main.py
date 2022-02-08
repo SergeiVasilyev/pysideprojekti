@@ -96,9 +96,9 @@ class MainWindow(QMainWindow):
             laatikko = QMessageBox(self)
             # Jos vastaukset ovat oikein niin ladataan uusia kysymyksiä
             if self.pisteet >= len(self.tiedot): # Если ответы все правильные, загружаем новые вопросы
-                self.kierros = 0
                 self.tiedot = lataa_kysymykset_netista()
-                laatikko.setText("Sait kaikki oikein!")
+                laatikko.setText(f"Sait kaikki oikein {self.kierros} kierroksella")
+                self.kierros = 0
             else:
                 laatikko.setText(f"Peli päättyi! Sait {self.pisteet} pistettä.") 
             laatikko.exec()
